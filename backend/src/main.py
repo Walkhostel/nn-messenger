@@ -1,19 +1,22 @@
 from fastapi import FastAPI
-from api import router as api_router
-from db import init_db
-from utils.logging import setup_logging
+from fastapi.middleware.cors import CORSMiddleware
+from api import router
 
-app = FastAPI(title="Chat Backend", description="Simple chat backend with WebSocket support", version="1.0.0")
+# Создаём приложение
+app = FastAPI(title="Chat Backend", version="1.0.0")
 
-# Инициализация логгера
-setup_logging()
+# Настройка CORS (временно разрешаем всё)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Инициализация базы данных
-init_db()
+app.include_router(router, prefix="/api")
 
-# Подключение API-роутеров
-app.include_router(api_router, prefix="/api/v1")
-
+# Простой endpoint для проверки
 @app.get("/")
-def root():
-    return {"message": "Chat backend is running"}
+def health_check():
+    return {"status": "OK", "message": "Backend is running"}
