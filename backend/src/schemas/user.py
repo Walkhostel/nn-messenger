@@ -1,10 +1,17 @@
-from pydantic import BaseModel
+# src/schemas/user.py
+from pydantic import BaseModel, validator
 from typing import Optional
 
 class UserCreate(BaseModel):
     username: str
-    email: str
     password: str
+
+    # Валидация длины пароля (если нужно)
+    @validator('password')
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError('Password must be at least 6 characters')
+        return v
 
 class UserLogin(BaseModel):
     username: str
@@ -13,7 +20,6 @@ class UserLogin(BaseModel):
 class UserOut(BaseModel):
     id: int
     username: str
-    email: str
     is_active: bool
     created_at: str
 
